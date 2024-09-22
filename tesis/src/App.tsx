@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { Modal } from "./Modal"
 import { useMutation } from "@tanstack/react-query"
-import { createQuery } from "./api/vertex"
+import { createVertexQuery } from "./api/vertex"
+import { createGPTQuery } from "./api/gpt"
 
 export const App = () => {
   const [query, setQuery] = useState('')
@@ -21,20 +22,23 @@ export const App = () => {
     }, 3000);
   };
 
-  const { mutate: vertexMutation, isPending } = useMutation({
-    mutationFn: createQuery.mutation,
+  const { mutate: vertexMutation, isPending: isVertexPending } = useMutation({
+    mutationFn: createVertexQuery.mutation,
     onSuccess: (data) => {
       setResultSqlQuery(data)
-    },
-    onError: (err) => {
-      // set error
-    },
+    }
+  });
+  const { mutate: gptMutation, isPending: isGptPending } = useMutation({
+    mutationFn: createGPTQuery.mutation,
+    onSuccess: (data) => {
+      setResultSqlQuery(data)
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (modelToUse === 'gpt') {
-      // call GPT mutation
+      gptMutation({ query, schema: databaseSchema })
       return
     }
     if (modelToUse === 'vertex')
@@ -92,8 +96,8 @@ export const App = () => {
       </form>
         <div className="flex flex-col gap-2 justify-center pt-10 w-1/4 items-center">
           <h2 className="text-2xl">SQL Query</h2>
-          {isPending && <p className="text-lg text-gray-500">Loading...</p>}
-          {!isPending && resultSqlQuery ? (
+          {(isGptPending || isVertexPending) && <p className="text-lg text-gray-500">Loading...</p>}
+          {!(isGptPending || isVertexPending) && resultSqlQuery ? (
             <>
               <textarea
                 className="border-2 border-gray-300 px-5 pr-16 rounded-lg text-sm focus:outline-gray-500 w-full h-80 font-mono bg-gray-800 text-white resize-none"

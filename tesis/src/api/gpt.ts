@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const createVertexQuery = {
+export const createGPTQuery = {
     mutation: async ({
       schema,
       query,
@@ -8,7 +8,7 @@ export const createVertexQuery = {
       const { data } = await axios.post<
         { schema: string, query: string},
         { data: { sqlQuery: string } }
-      >(`${import.meta.env.VITE_VERTEX_API}/transform-query`, {
+      >(`${import.meta.env.VITE_GPT_API}/query`, {
         schema,
         query,
       });
