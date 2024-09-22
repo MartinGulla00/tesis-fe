@@ -7,7 +7,7 @@ export const App = () => {
   const [query, setQuery] = useState('')
   const [databaseSchema, setDatabaseSchema] = useState('')
   const [showSchemaInput, setShowSchemaInput] = useState(false)
-  const [resultSqlQuery, setResultSqlQuery] = useState('dfs')
+  const [resultSqlQuery, setResultSqlQuery] = useState('')
   const [modelToUse, setModelToUse] = useState<'gpt'|'vertex'>('gpt')
   const [isCopied, setIsCopied] = useState(false);
 

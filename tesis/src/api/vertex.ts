@@ -5,14 +5,14 @@ export const createQuery = {
       schema,
       query,
     }:{ schema: string, query: string}) => {
-      const { sqlQuery } = await axios.post<
+      const { data } = await axios.post<
         { schema: string, query: string},
-        { sqlQuery: string }
-      >(`http://192.168.1.13:8001/transform-query`, {
+        { data: { sqlQuery: string } }
+      >(`http://localhost:8001/transform-query`, {
         schema,
         query,
       });
   
-      return sqlQuery;
+      return data.sqlQuery;
     },
   };
