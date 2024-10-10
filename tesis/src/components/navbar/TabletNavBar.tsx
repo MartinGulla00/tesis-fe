@@ -10,17 +10,16 @@ import {
   HamburgerMenuIcon,
 } from "@radix-ui/react-icons";
 import { navData } from "./navData";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
 import { ResourceRole } from "@/types/resource";
+import { getAuthDetails } from "@/utils/authStorage";
 
 export function TabletNavBar() {
-  const authState = useSelector((state: RootState) => state.auth.value);
+  const authState = getAuthDetails();
 
   const checkPermission = (itemPermissions?: string[]) => {
     return itemPermissions
       ? authState?.permissions?.some((perm: ResourceRole) =>
-          itemPermissions.includes(perm.resourceId.name)
+          itemPermissions.includes(perm.resourceId?.name)
         )
       : true;
   };

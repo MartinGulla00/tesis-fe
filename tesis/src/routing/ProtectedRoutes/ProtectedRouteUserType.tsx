@@ -1,10 +1,9 @@
 // ProtectedRoute.tsx
-import React, { useEffect } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import * as paths from "@/routing/paths"; // Adjust the import path as necessary
-import { Resource, ResourceRole } from "@/types/resource";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
+import { ResourceRole } from "@/types/resource";
+import { getAuthDetails } from "@/utils/authStorage";
 
 type Props = {
   children?: React.ReactNode;
@@ -15,7 +14,7 @@ export default function ProtectedRouteUserType({
   children,
   permissions: allowedPerms,
 }: Props): JSX.Element {
-  const authState = useSelector((state: RootState) => state.auth.value);
+  const authState = getAuthDetails();
 
   const hasPermission = authState?.permissions?.some(
     (permission: ResourceRole) => {

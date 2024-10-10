@@ -13,7 +13,6 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useAuthRedirect } from "@/hooks/auth/useAuthRedirect";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useForm } from "@/hooks/common/useForm";
-// import logo from "@/assets/logo.png";
 
 const Login: React.FC = () => {
   useAuthRedirect();

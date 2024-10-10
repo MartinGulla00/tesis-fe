@@ -1,11 +1,9 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { Toaster } from "./components/ui/toaster";
-import Router from "./routing/Router";
+import { ToastContainer } from "react-toastify";
 import axiosInterceptors from "./interceptors/auth";
+import Router from "./routing/Router";
 
 axiosInterceptors();
 
@@ -18,6 +16,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <QueryClientProvider client={queryClient}>
     <Router />
-    <Toaster />
+    <ToastContainer />
   </QueryClientProvider>
 );

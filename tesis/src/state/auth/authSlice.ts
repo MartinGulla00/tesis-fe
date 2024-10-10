@@ -1,8 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LoginUser, LoginUserResponse, User } from "@/types/user";
-import jwt_decode from "jwt-decode";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { LoginUserResponse } from "@/types/user";
 import { AuthStateValue, TokenPayload } from "@/types/auth";
 import { getToken, saveToken, wipeToken } from "@/utils/tokenStorage";
+import jwt_decode from "jwt-decode";
 
 interface AuthState {
   value: AuthStateValue | null;

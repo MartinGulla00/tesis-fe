@@ -10,6 +10,7 @@ import ManageUsersPage from "@/pages/Admin/ManageUsers";
 import ManageRolesPage from "@/pages/Admin/ManageRoles";
 import UserInfoPage from "@/pages/Admin/ManageUsers/UserInfoPage";
 import ConditionalNavBar from "@/components/navbar/ConditionalNavBar";
+import { App } from "@/App";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
               {renderProtectedRoute(paths.DEF_ROLES, ManageRolesPage, [
                 "verRoles",
               ])}
+              <Route path={paths.APP} element={<App />} />
               <Route path="*" element={<NotFound />} />
             </Route>
             <Route path={paths.NOT_AUTHORIZED} element={<NotAuthorized />} />

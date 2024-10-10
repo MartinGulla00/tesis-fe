@@ -21,11 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ExitIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { logoutUser } from "@/services/userService";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
-import { useDispatch } from "react-redux";
-import { logout } from "@/state/auth/authSlice";
 import useToaster from "@/hooks/common/useToaster";
+import { getAuthDetails, wipeAuthData } from "@/utils/authStorage";
 
 export const UserMenu = () => {
   const { showToast, showToastError } = useToaster();
@@ -34,8 +31,7 @@ export const UserMenu = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const authState = useSelector((state: RootState) => state.auth.value);
-  const dispatch = useDispatch();
+  const authState = getAuthDetails();
 
   useEffect(() => {
     if (isModalOpen) {
@@ -54,7 +50,7 @@ export const UserMenu = () => {
 
   const { mutate, isLoading } = useMutation(logoutUser, {
     onSuccess: () => {
-      dispatch(logout());
+      wipeAuthData();
       showToast("Sesión cerrada");
       navigate(paths.LOGIN);
     },

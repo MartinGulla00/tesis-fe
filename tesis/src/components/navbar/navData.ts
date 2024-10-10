@@ -1,12 +1,4 @@
-import {
-  LuBadgeCheck,
-  LuList,
-  LuPlus,
-  LuReceipt,
-  LuSettings,
-  LuUserCog,
-  LuUsers,
-} from "react-icons/lu";
+import { LuList, LuPlus, LuUserCog, LuUsers } from "react-icons/lu";
 import * as paths from "@/routing/paths";
 import { CheckSquareIcon } from "lucide-react";
 
@@ -19,32 +11,6 @@ interface NavItemData {
 }
 
 export const navData: NavItemData[] = [
-  {
-    title: "Órdenes de pedido",
-    icon: null,
-    link: null,
-    permissions: ["verOrdenesPedido", "verAutorizaciones"],
-    subitems: [
-      {
-        title: "Nueva orden",
-        link: paths.PO_NEW,
-        icon: LuPlus,
-        permissions: ["crearOrdenPedido"],
-      },
-      {
-        title: "Listado",
-        link: paths.PO_INDEX,
-        icon: LuList,
-        permissions: ["verOrdenesPedido"],
-      },
-      {
-        title: "Autorizaciones",
-        link: paths.AUTH_NOTES_INDEX,
-        icon: CheckSquareIcon,
-        permissions: ["verAutorizaciones"],
-      },
-    ],
-  },
   {
     title: "Definiciones",
     icon: null,
@@ -64,5 +30,12 @@ export const navData: NavItemData[] = [
         permissions: ["verRoles"],
       },
     ],
+  },
+  {
+    title: "Chat",
+    icon: null,
+    link: paths.APP,
+    permissions: null,
+    subitems: null,
   },
 ];

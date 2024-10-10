@@ -20,18 +20,17 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
 import { ResourceRole } from "@/types/resource";
 import NavBarListItem from "./NavBarListItem";
+import { getAuthDetails } from "@/utils/authStorage";
 
 export function DesktopNavBar() {
-  const authState = useSelector((state: RootState) => state.auth.value);
+  const authState = getAuthDetails();
 
   const checkPermission = (itemPermissions?: string[]) => {
     return itemPermissions
       ? authState?.permissions?.some((perm: ResourceRole) =>
-          itemPermissions.includes(perm.resourceId.name)
+          itemPermissions.includes(perm.resourceId?.name)
         )
       : true;
   };

@@ -12,7 +12,6 @@ import { Pencil2Icon, ReloadIcon } from "@radix-ui/react-icons";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import { toast } from "react-toastify";
 import {
   Select,
   SelectContent,
@@ -25,6 +24,7 @@ import { BaseResponse } from "@/utils/BaseResponse";
 import { Role } from "@/types/role";
 import { getRoles } from "@/services/roleService";
 import { EditUser } from "@/types/user";
+import { toast } from "react-toastify";
 
 type Props = {
   id: string;

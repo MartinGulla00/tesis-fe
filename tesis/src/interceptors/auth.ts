@@ -1,15 +1,14 @@
 import * as paths from "../routing/paths";
 import axios from "axios";
-
-import { store } from  "@/state/store";
 import { getToken } from "@/utils/tokenStorage";
+import { wipeAuthData } from "@/utils/authStorage";
 
 const axiosInterceptors = () => {
   axios.interceptors.response.use(
     (response) => response,
     (error) => {
       if (error.response?.status === 401) {
-        store.dispatch({ type: "auth/logout" });
+        wipeAuthData();
         window.location.href = paths.LANDING;
       }
       return Promise.reject(error);
