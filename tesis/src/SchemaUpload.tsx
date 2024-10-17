@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useRef } from 'react';
 
 interface SchemaUploadProps {
-  onDatabaseSchemaChange: (schema: string) => void;
+  onDatabaseSchemaChange: (file: File | null) => void;
 }
 
 const SchemaUpload: React.FC<SchemaUploadProps> = ({ onDatabaseSchemaChange }) => {
@@ -16,19 +16,10 @@ const SchemaUpload: React.FC<SchemaUploadProps> = ({ onDatabaseSchemaChange }) =
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const fileContent = e.target?.result;
-        if (typeof fileContent === 'string') {
-          onDatabaseSchemaChange(fileContent);
-          alert('Database Schema uploaded correctly!');
-        }
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
-        alert('An error occurred while reading the file.');
-      };
-      reader.readAsText(selectedFile);
+      onDatabaseSchemaChange(selectedFile);
+      alert('Database Schema file selected correctly!');
+    } else {
+      onDatabaseSchemaChange(null);
     }
   };
 
