@@ -3,8 +3,8 @@ import axios from "axios";
 export const createQuery = {
   mutation: async ({
     sqlFile,
-    model, 
-    userInput, 
+    model,
+    userInput,
   }: {
     sqlFile: File;
     model: string;
@@ -16,17 +16,27 @@ export const createQuery = {
     formData.append("model", model);
     formData.append("userInput", userInput);
 
-    try {
-      const { data } = await axios.post<
-        FormData,
-        { data: { sqlString: string } }
-      >(`${import.meta.env.BASE_SERVER_API}/chat`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    console.log('Model:', model);
 
-      return data.sqlString;
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_SERVER_API}/api/schema/chat`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log('Response data:', response.data);
+
+      let sqlString = response.data.sqlString;
+      if (typeof sqlString === 'object') {
+        sqlString = JSON.stringify(sqlString, null, 2);
+      }
+
+      return sqlString;
     } catch (error) {
       console.error("Error uploading SQL file:", error);
       throw error;
