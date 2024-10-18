@@ -1,15 +1,21 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { App } from './App'
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ToastContainer } from "react-toastify";
+import axiosInterceptors from "./interceptors/auth";
+import Router from "./routing/Router";
+
+axiosInterceptors();
 
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById('root')!).render(
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+
+root.render(
   <QueryClientProvider client={queryClient}>
-    <StrictMode>
-      <App />
-    </StrictMode>
+    <Router />
+    <ToastContainer />
   </QueryClientProvider>
-)
+);
