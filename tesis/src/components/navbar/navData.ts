@@ -38,4 +38,11 @@ export const navData: NavItemData[] = [
     permissions: null,
     subitems: null,
   },
+  {
+    title: "Consultas",
+    icon: null, 
+    link: paths.QUERIES,
+    permissions: ["verRoles"], 
+    subitems: null,
+  }
 ];
