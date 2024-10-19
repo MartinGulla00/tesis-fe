@@ -9,9 +9,10 @@ import Home from "../pages/Home";
 import ManageUsersPage from "@/pages/Admin/ManageUsers";
 import ManageRolesPage from "@/pages/Admin/ManageRoles";
 import UserInfoPage from "@/pages/Admin/ManageUsers/UserInfoPage";
-import QueriesPage from "@/pages/Queries/QueriesPage"; 
-import QueryDetailsPage from  "@/pages/Queries/QueryDetailsPage";
+import QueriesPage from "@/pages/Queries/QueriesPage";
+import QueryDetailsPage from "@/pages/Queries/QueryDetailsPage";
 import ConditionalNavBar from "@/components/navbar/ConditionalNavBar";
+import QueryFilters from "@/pages/Queries/QueryFilters";
 import { App } from "@/App";
 
 function Router() {
@@ -34,7 +35,10 @@ function Router() {
               ])}
               {renderProtectedRoute(paths.QUERIES, QueriesPage, [
                 "verRoles",
-              ])} 
+              ])}
+              {renderProtectedRoute(paths.QUERIES, QueryFilters, [
+                "verRoles",
+              ])}
               {renderProtectedRoute(paths.QUERY_DETAILS, QueryDetailsPage, [
                 "verRoles",
               ])}
