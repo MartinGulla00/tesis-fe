@@ -73,7 +73,6 @@ const QueryListTable: React.FC<Props> = ({ queries }: Props) => {
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
               <TableHead>Consulta en Lenguaje Natural</TableHead>
               <TableHead>SQL Generado</TableHead>
               <TableHead>Modelo</TableHead>
@@ -92,7 +91,6 @@ const QueryListTable: React.FC<Props> = ({ queries }: Props) => {
                   }`}
                   onClick={() => handleRowClick(query._id)}
                 >
-                  <TableCell className="font-medium">{query._id}</TableCell>
                   <TableCell>{query.natural_language_query}</TableCell>
                   <TableCell>{query.sql_query_generated}</TableCell>
                   <TableCell>{query.model}</TableCell>

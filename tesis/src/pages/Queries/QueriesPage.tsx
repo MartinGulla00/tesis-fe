@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import QueryListTable from  "@/pages/Queries/QueryListTable";
+import QueryListTable from "@/pages/Queries/QueryListTable";
+import { getAuthDetails } from "@/utils/authStorage"; // Importa la función para obtener detalles de autenticación
 
 const QueriesPage: React.FC = () => {
   const [queries, setQueries] = useState([]);
@@ -11,7 +12,14 @@ const QueriesPage: React.FC = () => {
 
   const fetchQueries = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/queries");
+      const authDetails = getAuthDetails(); 
+      const userId = authDetails?.user?._id;
+
+      const response = await axios.get("http://127.0.0.1:8000/queries", {
+        params: {
+          user_id: userId, 
+        },
+      });
       setQueries(response.data);
       console.log(response.data);
     } catch (error) {
