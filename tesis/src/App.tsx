@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { createQuery } from "./api/model";
 import SchemaUpload from "./SchemaUpload";
+import VoiceInput from "./SpeechRecognition";
 
 export const App = () => {
   const [query, setQuery] = useState("");
@@ -51,7 +52,7 @@ export const App = () => {
           onChange={(e) => setQuery(e.target.value)}
         />
         <div>
-          <SpeechToText />
+          <VoiceInput/>
         </div>
         <div className="flex gap-2">
           <button

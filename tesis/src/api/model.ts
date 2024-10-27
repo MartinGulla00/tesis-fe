@@ -20,7 +20,7 @@ export const createQuery = {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_SERVER_API}/api/schema/chat`,
+        `${import.meta.env.VITE_VITE_BASE_SERVER_API}/api/schema/chat`,
         formData,
         {
           headers: {

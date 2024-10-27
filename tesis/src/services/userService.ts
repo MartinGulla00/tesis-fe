@@ -11,7 +11,7 @@ import {
 
 export const registerUser = async (data: RegisterUser) => {
   const response = await axios.post<BaseResponse<RegisterUserResponse>>(
-    `${import.meta.env.VITE_API_URL}/api/users/register`,
+    `${import.meta.env.VITE_BASE_SERVER_API}/api/users/register`,
     data
   );
   return response.data.data;
@@ -19,7 +19,7 @@ export const registerUser = async (data: RegisterUser) => {
 
 export const loginUser = async (data: LoginUser) => {
   const response = await axios.post<BaseResponse<LoginUserResponse>>(
-    `${import.meta.env.VITE_API_URL}/api/users/login`,
+    `${import.meta.env.VITE_BASE_SERVER_API}/api/users/login`,
     data
   );
   return response.data.data;
@@ -27,32 +27,32 @@ export const loginUser = async (data: LoginUser) => {
 
 export const verifyToken = async () => {
   const response = await axios.get<BaseResponse<LoginUserResponse>>(
-    `${import.meta.env.VITE_API_URL}/api/users/verify`
+    `${import.meta.env.VITE_BASE_SERVER_API}/api/users/verify`
   );
   return response.data;
 };
 
 export const logoutUser = async () => {
-  await axios.post(`${import.meta.env.VITE_API_URL}/api/users/logout`);
+  await axios.post(`${import.meta.env.VITE_BASE_SERVER_API}/api/users/logout`);
 };
 
 export const getUsers = async () => {
   const response = await axios.get<BaseResponse<User[]>>(
-    `${import.meta.env.VITE_API_URL}/api/users`
+    `${import.meta.env.VITE_BASE_SERVER_API}/api/users`
   );
   return response.data;
 };
 
 export const getUserById = async (id: string) => {
   const response = await axios.get<BaseResponse<User>>(
-    `${import.meta.env.VITE_API_URL}/api/users/${id}`
+    `${import.meta.env.VITE_BASE_SERVER_API}/api/users/${id}`
   );
   return response.data;
 };
 
 export const editUser = async (data: EditUser) => {
   const response = await axios.put<BaseResponse<User>>(
-    `${import.meta.env.VITE_API_URL}/api/users/${data.id}`,
+    `${import.meta.env.VITE_BASE_SERVER_API}/api/users/${data.id}`,
     data
   );
   return response.data;
