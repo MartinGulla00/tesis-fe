@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { createQuery } from "./api/model";
@@ -49,6 +50,9 @@ export const App = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <div>
+          <SpeechToText />
+        </div>
         <div className="flex gap-2">
           <button
             disabled={!databaseSchemaFile || !query}
@@ -76,14 +80,9 @@ export const App = () => {
               value={resultSqlQuery}
               readOnly
             />
-            <button
-              type="button"
-              className={`${
-                isCopied ? "bg-green-500" : "bg-blue-500 hover:bg-blue-700"
-              } text-white font-bold py-2 px-4 rounded-lg w-fit transition-colors duration-300`}
-              onClick={handleCopy}
-            >
-              {isCopied ? "Copied!" : "Copy to Clipboard"}
+            <button type="button" className={`${isCopied ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-700'
+              } text-white font-bold py-2 px-4 rounded-lg w-fit transition-colors duration-300`} onClick={handleCopy}>
+              {isCopied ? 'Copied!' : 'Copy to Clipboard'}
             </button>
           </>
         ) : (
