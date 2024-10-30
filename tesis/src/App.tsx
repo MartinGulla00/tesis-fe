@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "react-query";
 import { createQuery } from "./api/model";
 import SchemaUpload from "./SchemaUpload";
 import VoiceInput from "./SpeechRecognition";
@@ -22,7 +22,7 @@ export const App = () => {
     }, 3000);
   };
 
-  const { mutate: gptMutation, isPending: isApiPending } = useMutation({
+  const { mutate: gptMutation, isLoading: isApiPending } = useMutation({
     mutationFn: createQuery.mutation,
     onSuccess: (data) => {
       setResultSqlQuery(data);
@@ -45,12 +45,6 @@ export const App = () => {
         <div>
           <SchemaUpload onDatabaseSchemaChange={setDatabaseSchemaFile} />
         </div>
-        <input
-          className="border-2 border-gray-300 bg-white px-5 pr-16 rounded-lg text-sm focus:outline-gray-500 h-10 w-full"
-          placeholder="Type a question..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
         <div>
           <VoiceInput/>
         </div>
