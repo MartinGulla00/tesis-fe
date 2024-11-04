@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { FaMicrophone } from 'react-icons/fa'; 
+import { FaMicrophone } from 'react-icons/fa';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-const VoiceInput: React.FC = () => {
-  const [query, setQuery] = useState<string>('');
+interface VoiceInputProps {
+  query: string;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const VoiceInput: React.FC<VoiceInputProps> = ({ query, setQuery }) => {
   const [isListening, setIsListening] = useState<boolean>(false);
 
   const startListening = () => {

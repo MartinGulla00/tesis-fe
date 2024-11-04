@@ -5,7 +5,7 @@ import * as paths from "@/routing/paths";
 import { LoginUser } from "@/types/user";
 import useToaster from "../common/useToaster";
 import { saveAuthDetails } from "@/utils/authStorage";
-import { saveToken } from "@/utils/tokenStorage";
+import { saveToken, saveUserId } from "@/utils/tokenStorage";
 
 export const useLogin = () => {
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ export const useLogin = () => {
       onSuccess: (data) => {
         saveAuthDetails(data);
         saveToken(data?.token);
+        saveUserId(data?.user._id);
         showToast("Bienvenido!");
         navigate(paths.LANDING);
       },
