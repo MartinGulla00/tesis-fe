@@ -17,7 +17,6 @@ const SchemaUpload: React.FC<SchemaUploadProps> = ({ onDatabaseSchemaChange }) =
       }
 
       onDatabaseSchemaChange(selectedFile);
-      alert('Esquema seleccionado con éxito!');
     } else {
       onDatabaseSchemaChange(null);
     }

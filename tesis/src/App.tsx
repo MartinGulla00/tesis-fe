@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "react-query";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { createQuery } from "./api/model";
+import { schemaService } from "./services/schemaService";
 import SchemaUpload from "./SchemaUpload";
 import VoiceInput from "./SpeechRecognition";
 import Recommendations from "./SimilarPrompt";
@@ -9,8 +10,7 @@ import OpenAI from "openai";
 import { getUserId } from "@/utils/tokenStorage";
 import Heading1 from "@/components/headings/Heading1";
 import { Button } from "@/components/ui/button";
-import SchemaSelectionModal from "./components/SchemaSelectionModal";
-import { schemaService } from "./services/schemaService";
+import SchemaSelectionModal from "@/components/SchemaSelectionModal";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -88,6 +88,13 @@ export const App = () => {
     },
   });
 
+  const handleSaveSchemaToggle = (checked: boolean) => {
+    setSaveSchemaFlag(checked);
+    if (!checked) {
+      setSaveSchemaName("");
+    }
+  };
+
   const handleSubmit = async () => {
     const embedding = await generateEmbeddingWithBackoff(query);
     if (embedding.length > 0) {
@@ -109,10 +116,15 @@ export const App = () => {
         setRecommendation(data[0]);
         setShowModal(true);
       } else {
+        // Si `selectedSchema` está definido, creamos un archivo con su contenido
+        const sqlFile = selectedSchema
+          ? new File([selectedSchema.schema], selectedSchema.filename, { type: "text/plain" })
+          : databaseSchemaFile;
+
         gptMutation({
           userInput: query,
           model: modelToUse,
-          sqlFile: selectedSchema ? new File([selectedSchema.schema], selectedSchema.filename) : databaseSchemaFile,
+          sqlFile,
           saveSchemaFlag,
           saveSchemaName,
         });
@@ -124,10 +136,14 @@ export const App = () => {
     setRecommendation(null);
     setShowModal(false);
 
+    const sqlFile = selectedSchema
+      ? new File([selectedSchema.schema], selectedSchema.filename, { type: "text/plain" })
+      : databaseSchemaFile;
+
     gptMutation({
       userInput: query,
       model: modelToUse,
-      sqlFile: selectedSchema ? new File([selectedSchema.schema], selectedSchema.filename) : databaseSchemaFile,
+      sqlFile,
       saveSchemaFlag,
       saveSchemaName,
     });
@@ -159,33 +175,42 @@ export const App = () => {
                 Elegir Esquema
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">Puedes omitir el esquema para usar uno por defecto.</p>
+              
+            {selectedSchema || databaseSchemaFile ? (
+              <p className="text-xs text-blue-500 mt-2">
+                Esquema cargado: {selectedSchema ? selectedSchema.filename : databaseSchemaFile?.name}
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 mt-2">Puedes omitir el esquema para usar uno por defecto.</p>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               checked={saveSchemaFlag}
-              onChange={(e) => setSaveSchemaFlag(e.target.checked)}
+              onChange={(e) => handleSaveSchemaToggle(e.target.checked)}
               className="form-checkbox text-indigo-600"
             />
             <span className="text-sm text-gray-700">¿Guardar esquema?</span>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700" htmlFor="schemaName">
-              Nombre del Esquema
-            </label>
-            <input
-              type="text"
-              id="schemaName"
-              value={saveSchemaName}
-              onChange={(e) => setSaveSchemaName(e.target.value)}
-              className="w-full border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Ingrese el nombre del esquema"
-              disabled={selectedSchema !== null}
-            />
-          </div>
+          {saveSchemaFlag && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700" htmlFor="schemaName">
+                Nombre del Esquema (Opcional)
+              </label>
+              <input
+                type="text"
+                id="schemaName"
+                value={saveSchemaName}
+                onChange={(e) => setSaveSchemaName(e.target.value)}
+                className="w-full border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Ingrese el nombre del esquema"
+                disabled={selectedSchema !== null}
+              />
+            </div>
+          )}
 
           <div className="flex space-x-4">
             <Button
@@ -233,7 +258,7 @@ export const App = () => {
       {showSchemaModal && (
         <SchemaSelectionModal
           schemas={schemas}
-          onSelectSchema={handleSchemaSelection}
+          onSelect={handleSchemaSelection}
           onClose={() => setShowSchemaModal(false)}
         />
       )}
