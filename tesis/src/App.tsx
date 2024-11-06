@@ -4,7 +4,7 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { createQuery } from "./api/model";
 import SchemaUpload from "./SchemaUpload";
 import VoiceInput from "./SpeechRecognition";
-import Recommendations from "./SimilarPrompt";
+import SimilarPrompt from "./SimilarPrompt";
 import OpenAI from "openai";
 import { getUserId } from "@/utils/tokenStorage";
 
