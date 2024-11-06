@@ -7,6 +7,7 @@ import VoiceInput from "./SpeechRecognition";
 import Recommendations from "./SimilarPrompt";
 import OpenAI from "openai";
 import { getUserId } from "@/utils/tokenStorage";
+import { Button } from "@/components/ui/button";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -17,7 +18,7 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
 
-const generateEmbeddingWithBackoff = async (text: string, attempt = 1): Promise<number[]> => {
+const generateEmbeddingWithBackoff = async (text, attempt = 1) => {
   try {
     const response = await openai.embeddings.create({
       model: "text-embedding-ada-002",
@@ -36,14 +37,17 @@ const generateEmbeddingWithBackoff = async (text: string, attempt = 1): Promise<
 };
 
 export const App = () => {
-  const [query, setQuery] = useState<string>(""); 
+  const [query, setQuery] = useState("");
   const [databaseSchemaFile, setDatabaseSchemaFile] = useState<File | null>(null);
   const [resultSqlQuery, setResultSqlQuery] = useState("");
-  const [modelToUse, setModelToUse] = useState<"gpt" | "vertex">("gpt"); 
+  const [modelToUse, setModelToUse] = useState<"gpt" | "vertex">("gpt");
   const [isCopied, setIsCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [promptEmbedding, setPromptEmbedding] = useState<number[]>([]);
-  const [recommendation, setRecommendation] = useState<{ id: number; question: string; similarity: number } | null>(null);
+  const [recommendation, setRecommendation] = useState(null);
+
+  const [saveSchemaFlag, setSaveSchemaFlag] = useState(false);
+  const [saveSchemaName, setSaveSchemaName] = useState("");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(resultSqlQuery);
@@ -52,7 +56,13 @@ export const App = () => {
   };
 
   const { mutate: gptMutation, isLoading: isApiPending } = useMutation({
-    mutationFn: createQuery.mutation,
+    mutationFn: (variables: {
+      sqlFile: File | null;
+      model: string;
+      userInput: string;
+      saveSchemaFlag: boolean;
+      saveSchemaName: string;
+    }) => createQuery.mutation(variables),
     onSuccess: (data) => {
       setResultSqlQuery(data);
     },
@@ -63,11 +73,11 @@ export const App = () => {
     if (embedding.length > 0) {
       setPromptEmbedding(embedding);
 
-      const { data, error } = await supabase.rpc('match_reports', {
+      const { data, error } = await supabase.rpc("match_reports", {
         query_embedding: embedding,
         match_threshold: 0,
         match_count: 1,
-        requester_user_id: getUserId()
+        requester_user_id: getUserId(),
       });
 
       if (error) {
@@ -79,84 +89,113 @@ export const App = () => {
         setRecommendation(data[0]);
         setShowModal(true);
       } else {
-        gptMutation({ userInput: query, model: modelToUse, sqlFile: databaseSchemaFile });
+        gptMutation({
+          userInput: query,
+          model: modelToUse,
+          sqlFile: databaseSchemaFile,
+          saveSchemaFlag,
+          saveSchemaName,
+        });
       }
     }
   };
 
-  const handleAskThis = (prompt: string) => {
-    setQuery(prompt);
-    setShowModal(false);
-  };
-
-  const handleClose = () => {
-    setRecommendation(null);
-    setShowModal(false);
-    gptMutation({ userInput: query, model: modelToUse, sqlFile: databaseSchemaFile });
-  };
-
   return (
-    <div className="h-screen w-screen bg-orange-50 flex flex-col items-center">
-      <h1 className="text-4xl text-center pt-10 mb-8">Test Natural Language to SQL</h1> 
-  
-      <div className="mb-6">
-        <SchemaUpload onDatabaseSchemaChange={setDatabaseSchemaFile} />
-      </div>
-  
-      <div className="mb-6 w-full max-w-md">
-        <VoiceInput query={query} setQuery={setQuery} />
-      </div>
-  
-      <div className="flex gap-2 mt-4">
-        <button
-          disabled={!databaseSchemaFile || !query}
-          onClick={() => {
-            setModelToUse("gpt");
-            handleSubmit();
-          }}
-          className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-orange-200 disabled:cursor-not-allowed"
-        >
-          Use GPT
-        </button>
-        <button
-          disabled={!databaseSchemaFile || !query}
-          onClick={() => {
-            setModelToUse("vertex");
-            handleSubmit();
-          }}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-blue-200 disabled:cursor-not-allowed"
-        >
-          Use Vertex
-        </button>
-      </div>
-  
-      {isApiPending && <p className="text-lg text-gray-500">Loading...</p>}
-  
-      {resultSqlQuery && (
-        <div className="flex flex-col items-center mt-4 w-1/4">
-          <textarea
-            className="border-2 border-gray-300 px-5 pr-16 rounded-lg text-sm focus:outline-gray-500 w-full h-80 font-mono bg-gray-800 text-white resize-none"
-            value={resultSqlQuery}
-            readOnly
-          />
-          <button
-            type="button"
-            className={`${isCopied ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded-lg w-fit transition-colors duration-300 mt-2`}
-            onClick={handleCopy}
-          >
-            {isCopied ? 'Copied!' : 'Copy to Clipboard'}
-          </button>
+    <div className="flex flex-col h-full w-full">
+      <header className="p-4 bg-white border-b">
+        <h1 className="text-lg font-semibold">Generador de SQL Natural</h1>
+        <p className="text-sm text-gray-500">Convierte lenguaje natural en consultas SQL</p>
+      </header>
+
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="max-w-full space-y-4">
+          <VoiceInput query={query} setQuery={setQuery} />
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Subir Esquema (opcional)</label>
+            <SchemaUpload onDatabaseSchemaChange={setDatabaseSchemaFile} />
+            <p className="text-xs text-gray-500">Puedes omitir el esquema para usar uno por defecto.</p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={saveSchemaFlag}
+              onChange={(e) => setSaveSchemaFlag(e.target.checked)}
+              className="form-checkbox"
+            />
+            <span className="text-sm">¿Guardar esquema?</span>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700" htmlFor="schemaName">
+              Nombre del Esquema
+            </label>
+            <input
+              type="text"
+              id="schemaName"
+              value={saveSchemaName}
+              onChange={(e) => setSaveSchemaName(e.target.value)}
+              className="w-full border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="flex space-x-4">
+            <Button
+              onClick={() => {
+                setModelToUse("gpt");
+                handleSubmit();
+              }}
+              disabled={!query}
+              className="bg-indigo-600 hover:bg-indigo-800 text-white"
+            >
+              Usar GPT
+            </Button>
+            <Button
+              onClick={() => {
+                setModelToUse("vertex");
+                handleSubmit();
+              }}
+              disabled={!query}
+              className="bg-blue-600 hover:bg-blue-800 text-white"
+            >
+              Usar Vertex
+            </Button>
+          </div>
+
+          {isApiPending && <p className="text-center text-gray-500">Procesando...</p>}
+
+          {resultSqlQuery && (
+            <div className="mt-4">
+              <textarea
+                className="w-full h-40 border rounded-md p-2 bg-white text-sm font-mono"
+                value={resultSqlQuery}
+                readOnly
+              />
+              <Button onClick={handleCopy} className="mt-2 w-full bg-green-500 text-white">
+                {isCopied ? "¡Copiado!" : "Copiar al portapapeles"}
+              </Button>
+            </div>
+          )}
         </div>
-      )}
-  
+      </div>
+
       {showModal && recommendation && (
-        <div className="modal bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-          <Recommendations 
-            promptEmbedding={promptEmbedding} 
-            recommendation={recommendation} 
-            onAskThis={handleAskThis} 
-            onClose={handleClose} 
-          />
+        <div className="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
+            <Recommendations
+              promptEmbedding={promptEmbedding}
+              recommendation={recommendation}
+              onAskThis={(prompt) => {
+                setQuery(prompt);
+                setShowModal(false);
+              }}
+              onClose={() => {
+                setRecommendation(null);
+                setShowModal(false);
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

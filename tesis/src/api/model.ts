@@ -5,17 +5,27 @@ export const createQuery = {
     sqlFile,
     model,
     userInput,
+    saveSchemaFlag,
+    saveSchemaName,
   }: {
-    sqlFile: File;
+    sqlFile: File | null;
     model: string;
     userInput: string;
+    saveSchemaFlag: boolean;
+    saveSchemaName: string;
   }) => {
     const formData = new FormData();
-
-    formData.append("sqlFile", sqlFile);
+    if (sqlFile) {
+      formData.append("sqlFile", sqlFile);
+    }
     formData.append("model", model);
     formData.append("userInput", userInput);
-    console.log('Model:', model);
+    formData.append("saveSchemaFlag", saveSchemaFlag.toString());
+    formData.append("saveSchemaName", saveSchemaName);
+
+    console.log("Model:", model);
+    console.log("SaveSchemaFlag:", saveSchemaFlag);
+    console.log("SaveSchemaName:", saveSchemaName);
 
     try {
       const response = await axios.post(
@@ -28,10 +38,10 @@ export const createQuery = {
         }
       );
 
-      console.log('Response data:', response.data);
+      console.log("Response data:", response.data);
 
       let sqlString = response.data.sqlString;
-      if (typeof sqlString === 'object') {
+      if (typeof sqlString === "object") {
         sqlString = JSON.stringify(sqlString, null, 2);
       }
 
