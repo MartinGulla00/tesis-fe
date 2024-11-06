@@ -151,7 +151,7 @@ export const App = () => {
   
       {showModal && recommendation && (
         <div className="modal bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-          <Recommendations 
+          <SimilarPrompt 
             promptEmbedding={promptEmbedding} 
             recommendation={recommendation} 
             onAskThis={handleAskThis} 
