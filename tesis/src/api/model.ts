@@ -28,6 +28,7 @@ export const createQuery = {
     console.log("SaveSchemaName:", saveSchemaName);
 
     try {
+      console.log("Uploading SQL file...");
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_SERVER_API}/api/schema/chat`,
         formData,

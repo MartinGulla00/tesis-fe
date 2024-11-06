@@ -7,6 +7,7 @@ import VoiceInput from "./SpeechRecognition";
 import Recommendations from "./SimilarPrompt";
 import OpenAI from "openai";
 import { getUserId } from "@/utils/tokenStorage";
+import Heading1 from "@/components/headings/Heading1";
 import { Button } from "@/components/ui/button";
 
 const openai = new OpenAI({
@@ -89,6 +90,7 @@ export const App = () => {
         setRecommendation(data[0]);
         setShowModal(true);
       } else {
+        console.log("No recommendations found. Proceeding with GPT query...");
         gptMutation({
           userInput: query,
           model: modelToUse,
@@ -100,21 +102,33 @@ export const App = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col h-full w-full">
-      <header className="p-4 bg-white border-b">
-        <h1 className="text-lg font-semibold">Generador de SQL Natural</h1>
-        <p className="text-sm text-gray-500">Convierte lenguaje natural en consultas SQL</p>
-      </header>
+  const handleClose = () => {
+    setRecommendation(null);
+    setShowModal(false);
 
-      <div className="flex-1 p-4 overflow-y-auto">
-        <div className="max-w-full space-y-4">
+    gptMutation({
+      userInput: query,
+      model: modelToUse,
+      sqlFile: databaseSchemaFile,
+      saveSchemaFlag,
+      saveSchemaName,
+    });
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full w-full p-6">
+      <div className="w-full max-w-4xl">
+        <div className="text-center mb-6">
+          <Heading1 text="Generador de SQL Natural" />
+        </div>
+        <div className="bg-white shadow rounded-lg p-6 space-y-6">
           <VoiceInput query={query} setQuery={setQuery} />
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Subir Esquema (opcional)</label>
-            <SchemaUpload onDatabaseSchemaChange={setDatabaseSchemaFile} />
-            <p className="text-xs text-gray-500">Puedes omitir el esquema para usar uno por defecto.</p>
+            <div className="mt-2">
+              <SchemaUpload onDatabaseSchemaChange={setDatabaseSchemaFile} />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">Puedes omitir el esquema para usar uno por defecto.</p>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -122,9 +136,9 @@ export const App = () => {
               type="checkbox"
               checked={saveSchemaFlag}
               onChange={(e) => setSaveSchemaFlag(e.target.checked)}
-              className="form-checkbox"
+              className="form-checkbox text-indigo-600"
             />
-            <span className="text-sm">¿Guardar esquema?</span>
+            <span className="text-sm text-gray-700">¿Guardar esquema?</span>
           </div>
 
           <div className="space-y-2">
@@ -136,7 +150,8 @@ export const App = () => {
               id="schemaName"
               value={saveSchemaName}
               onChange={(e) => setSaveSchemaName(e.target.value)}
-              className="w-full border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring focus:ring-indigo-500"
+              className="w-full border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Ingrese el nombre del esquema"
             />
           </div>
 
@@ -163,16 +178,19 @@ export const App = () => {
             </Button>
           </div>
 
-          {isApiPending && <p className="text-center text-gray-500">Procesando...</p>}
+          {isApiPending && <p className="text-center text-gray-500 mt-4">Procesando...</p>}
 
           {resultSqlQuery && (
             <div className="mt-4">
               <textarea
-                className="w-full h-40 border rounded-md p-2 bg-white text-sm font-mono"
+                className="w-full h-40 border rounded-md p-2 bg-gray-50 text-sm font-mono"
                 value={resultSqlQuery}
                 readOnly
               />
-              <Button onClick={handleCopy} className="mt-2 w-full bg-green-500 text-white">
+              <Button
+                onClick={handleCopy}
+                className="mt-2 w-full bg-green-500 hover:bg-green-700 text-white"
+              >
                 {isCopied ? "¡Copiado!" : "Copiar al portapapeles"}
               </Button>
             </div>
@@ -182,7 +200,7 @@ export const App = () => {
 
       {showModal && recommendation && (
         <div className="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
             <Recommendations
               promptEmbedding={promptEmbedding}
               recommendation={recommendation}
@@ -190,10 +208,7 @@ export const App = () => {
                 setQuery(prompt);
                 setShowModal(false);
               }}
-              onClose={() => {
-                setRecommendation(null);
-                setShowModal(false);
-              }}
+              onClose={handleClose} 
             />
           </div>
         </div>
