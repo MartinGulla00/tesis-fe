@@ -9,6 +9,8 @@ import OpenAI from "openai";
 import { getUserId } from "@/utils/tokenStorage";
 import Heading1 from "@/components/headings/Heading1";
 import { Button } from "@/components/ui/button";
+import SchemaSelectionModal from "./components/SchemaSelectionModal";
+import { schemaService } from "./services/schemaService";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -40,6 +42,9 @@ const generateEmbeddingWithBackoff = async (text, attempt = 1) => {
 export const App = () => {
   const [query, setQuery] = useState("");
   const [databaseSchemaFile, setDatabaseSchemaFile] = useState<File | null>(null);
+  const [selectedSchema, setSelectedSchema] = useState(null);
+  const [schemas, setSchemas] = useState([]);
+  const [showSchemaModal, setShowSchemaModal] = useState(false);
   const [resultSqlQuery, setResultSqlQuery] = useState("");
   const [modelToUse, setModelToUse] = useState<"gpt" | "vertex">("gpt");
   const [isCopied, setIsCopied] = useState(false);
@@ -50,20 +55,34 @@ export const App = () => {
   const [saveSchemaFlag, setSaveSchemaFlag] = useState(false);
   const [saveSchemaName, setSaveSchemaName] = useState("");
 
+  const { mutate: fetchSchemas } = useMutation(
+    async () => {
+      const userId = getUserId();
+      return await schemaService.fetchSchemas(userId);
+    },
+    {
+      onSuccess: (data) => {
+        setSchemas(data);
+        setShowSchemaModal(true);
+      },
+      onError: (error) => console.error("Error fetching schemas:", error),
+    }
+  );
+
   const handleCopy = () => {
     navigator.clipboard.writeText(resultSqlQuery);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 3000);
   };
 
-  const { mutate: gptMutation, isLoading: isApiPending } = useMutation({
-    mutationFn: (variables: {
-      sqlFile: File | null;
-      model: string;
-      userInput: string;
-      saveSchemaFlag: boolean;
-      saveSchemaName: string;
-    }) => createQuery.mutation(variables),
+  const { mutate: gptMutation, isLoading: isApiPending } = useMutation<string, Error, {
+    userInput: string;
+    model: "gpt" | "vertex";
+    sqlFile: File | null;
+    saveSchemaFlag: boolean;
+    saveSchemaName: string;
+  }>({
+    mutationFn: (variables) => createQuery.mutation(variables),
     onSuccess: (data) => {
       setResultSqlQuery(data);
     },
@@ -90,11 +109,10 @@ export const App = () => {
         setRecommendation(data[0]);
         setShowModal(true);
       } else {
-        console.log("No recommendations found. Proceeding with GPT query...");
         gptMutation({
           userInput: query,
           model: modelToUse,
-          sqlFile: databaseSchemaFile,
+          sqlFile: selectedSchema ? new File([selectedSchema.schema], selectedSchema.filename) : databaseSchemaFile,
           saveSchemaFlag,
           saveSchemaName,
         });
@@ -109,10 +127,16 @@ export const App = () => {
     gptMutation({
       userInput: query,
       model: modelToUse,
-      sqlFile: databaseSchemaFile,
+      sqlFile: selectedSchema ? new File([selectedSchema.schema], selectedSchema.filename) : databaseSchemaFile,
       saveSchemaFlag,
       saveSchemaName,
     });
+  };
+
+  const handleSchemaSelection = (schema) => {
+    setSelectedSchema(schema);
+    setSaveSchemaName(schema.filename);
+    setShowSchemaModal(false);
   };
 
   return (
@@ -125,8 +149,15 @@ export const App = () => {
           <VoiceInput query={query} setQuery={setQuery} />
 
           <div className="space-y-2">
-            <div className="mt-2">
-              <SchemaUpload onDatabaseSchemaChange={setDatabaseSchemaFile} />
+            <div className="mt-2 flex items-center space-x-2">
+              <SchemaUpload onDatabaseSchemaChange={(file) => {
+                setDatabaseSchemaFile(file);
+                setSelectedSchema(null);
+                setSaveSchemaName("");
+              }} />
+              <Button onClick={() => fetchSchemas()} className="bg-gray-300">
+                Elegir Esquema
+              </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2">Puedes omitir el esquema para usar uno por defecto.</p>
           </div>
@@ -152,6 +183,7 @@ export const App = () => {
               onChange={(e) => setSaveSchemaName(e.target.value)}
               className="w-full border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Ingrese el nombre del esquema"
+              disabled={selectedSchema !== null}
             />
           </div>
 
@@ -197,6 +229,14 @@ export const App = () => {
           )}
         </div>
       </div>
+
+      {showSchemaModal && (
+        <SchemaSelectionModal
+          schemas={schemas}
+          onSelectSchema={handleSchemaSelection}
+          onClose={() => setShowSchemaModal(false)}
+        />
+      )}
 
       {showModal && recommendation && (
         <div className="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

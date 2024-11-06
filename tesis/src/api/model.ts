@@ -30,7 +30,7 @@ export const createQuery = {
     try {
       console.log("Uploading SQL file...");
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_SERVER_API}/api/schema/chat`,
+        `${import.meta.env.VITE_BASE_SERVER_API}/api/schemas/chat`,
         formData,
         {
           headers: {
