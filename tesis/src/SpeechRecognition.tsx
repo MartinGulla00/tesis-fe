@@ -49,7 +49,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ query, setQuery }) => {
     <div className="flex items-center space-x-2">
       <input
         className="border-2 border-gray-300 bg-white px-5 pr-10 rounded-lg text-sm focus:outline-gray-500 h-10 w-full"
-        placeholder="Type a question or speak..."
+        placeholder="Habla o escribe una consulta..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />

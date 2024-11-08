@@ -12,12 +12,11 @@ const SchemaUpload: React.FC<SchemaUploadProps> = ({ onDatabaseSchemaChange }) =
       const selectedFile = event.target.files[0];
 
       if (selectedFile.type !== 'application/sql' && !selectedFile.name.endsWith('.sql')) {
-        alert('Please select a valid SQL file.');
+        alert('Debe seleccionar un esquema valido.');
         return;
       }
 
       onDatabaseSchemaChange(selectedFile);
-      alert('Database Schema file selected correctly!');
     } else {
       onDatabaseSchemaChange(null);
     }
@@ -43,7 +42,7 @@ const SchemaUpload: React.FC<SchemaUploadProps> = ({ onDatabaseSchemaChange }) =
         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg w-fit"
         onClick={handleButtonClick}
       >
-        Enter Database Schema
+        Subir Esquema SQL 
       </button>
     </>
   );
