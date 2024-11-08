@@ -5,7 +5,7 @@ import { createQuery } from "./api/model";
 import { schemaService } from "./services/schemaService";
 import SchemaUpload from "./SchemaUpload";
 import VoiceInput from "./SpeechRecognition";
-import Recommendations from "./SimilarPrompt";
+import SimilarPrompt from "./SimilarPrompt";
 import OpenAI from "openai";
 import { getUserId } from "@/utils/tokenStorage";
 import Heading1 from "@/components/headings/Heading1";
@@ -264,18 +264,13 @@ export const App = () => {
       )}
 
       {showModal && recommendation && (
-        <div className="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <Recommendations
-              promptEmbedding={promptEmbedding}
-              recommendation={recommendation}
-              onAskThis={(prompt) => {
-                setQuery(prompt);
-                setShowModal(false);
-              }}
-              onClose={handleClose} 
-            />
-          </div>
+        <div className="modal bg-gray-800 text-white p-4 rounded-lg shadow-lg">
+          <SimilarPrompt 
+            promptEmbedding={promptEmbedding} 
+            recommendation={recommendation} 
+            onAskThis={handleAskThis} 
+            onClose={handleClose} 
+          />
         </div>
       )}
     </div>

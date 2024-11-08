@@ -5,14 +5,14 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
 
-interface RecommendationProps {
+interface SimilarPromptProps {
   promptEmbedding?: number[];
   recommendation: { id: number; question: string; similarity: number };
   onAskThis: (prompt: string) => void;
   onClose: () => void;
 }
 
-const Recommendations: React.FC<RecommendationProps> = ({ recommendation, onAskThis, onClose }) => {
+const SimilarPrompt: React.FC<SimilarPromptProps> = ({ recommendation, onAskThis, onClose }) => {
   return (
     <div>
       <h2>You previously asked:</h2>
@@ -37,4 +37,4 @@ const Recommendations: React.FC<RecommendationProps> = ({ recommendation, onAskT
   );
 };
 
-export default Recommendations;
+export default SimilarPrompt;
