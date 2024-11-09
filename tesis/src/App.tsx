@@ -132,6 +132,11 @@ export const App = () => {
     }
   };
 
+  const handleAskThis = (prompt: string) => {
+    setQuery(prompt);
+    setShowModal(false);
+  };
+
   const handleClose = () => {
     setRecommendation(null);
     setShowModal(false);
