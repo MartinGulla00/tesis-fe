@@ -102,7 +102,7 @@ export const App = () => {
 
       const { data, error } = await supabase.rpc("match_reports", {
         query_embedding: embedding,
-        match_threshold: 0,
+        match_threshold: 0.7,
         match_count: 1,
         requester_user_id: getUserId(),
       });
