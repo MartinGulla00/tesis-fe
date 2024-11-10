@@ -15,22 +15,19 @@ const QueriesPage: React.FC = () => {
 
   useEffect(() => {
     fetchQueries();
-  }, [filters]);
+  }, [filters.model, filters.isValid]); 
 
   const fetchQueries = async () => {
     try {
       const params: any = {};
 
-      if (filters.queryText && filters.queryText.trim() !== "") {
-        params.context = filters.queryText;
-      }
       if (filters.model && filters.model.trim() !== "") {
         params.model = filters.model;
       }
       if (filters.isValid && filters.isValid.trim() !== "") {
         params.is_valid = filters.isValid === "true";
       }
-      
+
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_SERVER_API}/api/queries/detail`,
         {
@@ -47,13 +44,19 @@ const QueriesPage: React.FC = () => {
       console.log("da error");
       showToastError(error, "Error fetching queries");
     }
-  };  
+  };
+
+  const filteredQueries = queries.filter((query) =>
+    query.natural_language_query
+      .toLowerCase()
+      .includes(filters.queryText.toLowerCase())
+  );
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Página de Consultas</h1>
       <QueryFilters filters={filters} setFilters={setFilters} />
-      <QueryListTable queries={queries} />
+      <QueryListTable queries={filteredQueries} /> 
     </div>
   );
 };
