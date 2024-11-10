@@ -23,13 +23,13 @@ const SimilarPrompt: React.FC<SimilarPromptProps> = ({ recommendation, onAskThis
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg"
             onClick={() => onAskThis(recommendation.question)}
           >
-            Ask this
+            Preguntar esto
           </button>
           <button 
             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-lg"
             onClick={onClose}
           >
-            Close
+            Cerrar
           </button>
         </div>
       </div>
