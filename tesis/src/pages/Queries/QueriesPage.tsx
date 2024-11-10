@@ -15,7 +15,8 @@ const QueriesPage: React.FC = () => {
 
   useEffect(() => {
     fetchQueries();
-  }, [filters.model]); 
+  }, [filters.model]);
+
   const fetchQueries = async () => {
     try {
       const params: any = {};
@@ -37,8 +38,31 @@ const QueriesPage: React.FC = () => {
       }
       setQueries(response.data);
     } catch (error) {
-      console.log("da error");
+      console.error("Error fetching queries:", error);
       showToastError(error, "Error fetching queries");
+    }
+  };
+
+  const updateQueryValidity = async (id: string, isValid: boolean) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_SERVER_API}/api/queries/${id}`,
+        { is_valid: isValid }
+      );
+
+      if (response.status !== 200) {
+        showToastError(null, "Error updating query");
+        return;
+      }
+
+      setQueries((prevQueries) =>
+        prevQueries.map((query) =>
+          query._id === id ? { ...query, is_valid: isValid } : query
+        )
+      );
+    } catch (error) {
+      console.error("Error updating query validity:", error);
+      showToastError(error, "Error updating query");
     }
   };
 
@@ -56,7 +80,10 @@ const QueriesPage: React.FC = () => {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Página de Consultas</h1>
       <QueryFilters filters={filters} setFilters={setFilters} />
-      <QueryListTable queries={filteredQueries} /> 
+      <QueryListTable
+        queries={filteredQueries}
+        onUpdateValidity={updateQueryValidity}
+      />
     </div>
   );
 };

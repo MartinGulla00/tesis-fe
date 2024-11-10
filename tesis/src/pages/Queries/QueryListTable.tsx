@@ -12,9 +12,10 @@ import * as paths from "@/routing/paths";
 
 type Props = {
   queries: any[];
+  onUpdateValidity: (id: string, isValid: boolean) => void; 
 };
 
-const QueryListTable: React.FC<Props> = ({ queries = [] }: Props) => {
+const QueryListTable: React.FC<Props> = ({ queries = [], onUpdateValidity }: Props) => {
   const navigate = useNavigate();
 
   const handleRowClick = (id: string) => {
@@ -29,10 +30,11 @@ const QueryListTable: React.FC<Props> = ({ queries = [] }: Props) => {
           <TableHead>Fecha</TableHead>
           <TableHead>Válida</TableHead>
           <TableHead>Modelo</TableHead>
+          <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {(Array.isArray(queries) ? queries : []).map((query) => ( 
+        {(Array.isArray(queries) ? queries : []).map((query) => (
           <TableRow
             key={query._id}
             onClick={() => handleRowClick(query._id)}
@@ -42,6 +44,17 @@ const QueryListTable: React.FC<Props> = ({ queries = [] }: Props) => {
             <TableCell>{new Date(query.timestamp).toLocaleString()}</TableCell>
             <TableCell>{query.is_valid ? "Sí" : "No"}</TableCell>
             <TableCell>{query.model}</TableCell>
+            <TableCell>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  onUpdateValidity(query._id, !query.is_valid);
+                }}
+                className="px-2 py-1 bg-blue-500 text-white rounded"
+              >
+                {query.is_valid ? "Marcar como No Válida" : "Marcar como Válida"}
+              </button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
