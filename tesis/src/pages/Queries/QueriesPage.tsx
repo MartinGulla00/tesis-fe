@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import QueryListTable from "@/pages/Queries/QueryListTable";
 import QueryFilters from "@/pages/Queries/QueryFilters";
+import useToaster from "../../hooks/common/useToaster";
 
 const QueriesPage: React.FC = () => {
   const [queries, setQueries] = useState([]);
@@ -10,6 +11,7 @@ const QueriesPage: React.FC = () => {
     model: "",
     isValid: "",
   });
+  const { showToastError } = useToaster();
 
   useEffect(() => {
     fetchQueries();
@@ -18,23 +20,34 @@ const QueriesPage: React.FC = () => {
   const fetchQueries = async () => {
     try {
       const params: any = {};
-      if (filters.queryText) {
+
+      if (filters.queryText && filters.queryText.trim() !== "") {
         params.context = filters.queryText;
       }
-      if (filters.model) {
+      if (filters.model && filters.model.trim() !== "") {
         params.model = filters.model;
       }
-      if (filters.isValid) {
-        params.is_valid = filters.isValid === "true"; 
+      if (filters.isValid && filters.isValid.trim() !== "") {
+        params.is_valid = filters.isValid === "true";
       }
-
-      const response = await axios.get("http://127.0.0.1:8000/queries", { params });
+      
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_SERVER_API}/api/queries/detail`,
+        {
+          params,
+        }
+      );
+  
+      if (!response.data || response.status !== 200) {
+        showToastError(null, "Error fetching queries");
+        return;
+      }
       setQueries(response.data);
-      console.log(response.data);
     } catch (error) {
-      console.error("Error fetching queries:", error);
+      console.log("da error");
+      showToastError(error, "Error fetching queries");
     }
-  };
+  };  
 
   return (
     <div className="p-4">

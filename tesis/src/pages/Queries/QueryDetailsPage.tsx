@@ -15,7 +15,7 @@ const QueryDetailsPage: React.FC = () => {
 
   const fetchQueryDetails = async (id: string) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/queries?id=${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_BASE_SERVER_API}/api/queries/detail?id=${id}`);
       setQuery(response.data);
     } catch (error) {
       console.error("Error fetching query details:", error);

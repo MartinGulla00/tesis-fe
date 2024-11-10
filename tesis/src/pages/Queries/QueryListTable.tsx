@@ -14,7 +14,7 @@ type Props = {
   queries: any[];
 };
 
-const QueryListTable: React.FC<Props> = ({ queries }: Props) => {
+const QueryListTable: React.FC<Props> = ({ queries = [] }: Props) => {
   const navigate = useNavigate();
 
   const handleRowClick = (id: string) => {
@@ -32,7 +32,7 @@ const QueryListTable: React.FC<Props> = ({ queries }: Props) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {queries.map((query) => (
+        {(Array.isArray(queries) ? queries : []).map((query) => ( 
           <TableRow
             key={query._id}
             onClick={() => handleRowClick(query._id)}
