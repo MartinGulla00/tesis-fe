@@ -116,7 +116,6 @@ export const App = () => {
         setRecommendation(data[0]);
         setShowModal(true);
       } else {
-        // Si `selectedSchema` está definido, creamos un archivo con su contenido
         const sqlFile = selectedSchema
           ? new File([selectedSchema.schema], selectedSchema.filename, { type: "text/plain" })
           : databaseSchemaFile;
@@ -135,7 +134,18 @@ export const App = () => {
   const handleAskThis = (prompt: string) => {
     setQuery(prompt);
     setShowModal(false);
-  };
+    const sqlFile = selectedSchema
+      ? new File([selectedSchema.schema], selectedSchema.filename, { type: "text/plain" })
+      : databaseSchemaFile;
+
+    gptMutation({
+      userInput: query,
+      model: modelToUse,
+      sqlFile,
+      saveSchemaFlag,
+      saveSchemaName,
+    });
+  };
 
   const handleClose = () => {
     setRecommendation(null);
@@ -180,7 +190,7 @@ export const App = () => {
                 Elegir Esquema
               </Button>
             </div>
-              
+
             {selectedSchema || databaseSchemaFile ? (
               <p className="text-xs text-blue-500 mt-2">
                 Esquema cargado: {selectedSchema ? selectedSchema.filename : databaseSchemaFile?.name}
@@ -270,11 +280,11 @@ export const App = () => {
 
       {showModal && recommendation && (
         <div className="modal bg-gray-800 text-white p-4 rounded-lg shadow-lg">
-          <SimilarPrompt 
-            promptEmbedding={promptEmbedding} 
-            recommendation={recommendation} 
-            onAskThis={handleAskThis} 
-            onClose={handleClose} 
+          <SimilarPrompt
+            promptEmbedding={promptEmbedding}
+            recommendation={recommendation}
+            onAskThis={handleAskThis}
+            onClose={handleClose}
           />
         </div>
       )}
