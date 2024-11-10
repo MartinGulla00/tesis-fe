@@ -9,23 +9,19 @@ const QueriesPage: React.FC = () => {
   const [filters, setFilters] = useState({
     queryText: "",
     model: "",
-    isValid: "",
+    isValid: "all",
   });
   const { showToastError } = useToaster();
 
   useEffect(() => {
     fetchQueries();
-  }, [filters.model, filters.isValid]); 
-
+  }, [filters.model]); 
   const fetchQueries = async () => {
     try {
       const params: any = {};
 
       if (filters.model && filters.model.trim() !== "") {
         params.model = filters.model;
-      }
-      if (filters.isValid && filters.isValid.trim() !== "") {
-        params.is_valid = filters.isValid === "true";
       }
 
       const response = await axios.get(
@@ -34,7 +30,7 @@ const QueriesPage: React.FC = () => {
           params,
         }
       );
-  
+
       if (!response.data || response.status !== 200) {
         showToastError(null, "Error fetching queries");
         return;
@@ -46,11 +42,15 @@ const QueriesPage: React.FC = () => {
     }
   };
 
-  const filteredQueries = queries.filter((query) =>
-    query.natural_language_query
-      .toLowerCase()
-      .includes(filters.queryText.toLowerCase())
-  );
+  const filteredQueries = queries
+    .filter((query) =>
+      query.natural_language_query
+        .toLowerCase()
+        .includes(filters.queryText.toLowerCase())
+    )
+    .filter((query) =>
+      filters.isValid === "all" ? true : query.is_valid === filters.isValid
+    );
 
   return (
     <div className="p-4">

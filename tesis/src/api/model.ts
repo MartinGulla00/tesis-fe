@@ -23,10 +23,6 @@ export const createQuery = {
     formData.append("saveSchemaFlag", saveSchemaFlag.toString());
     formData.append("saveSchemaName", saveSchemaName);
 
-    console.log("Model:", model);
-    console.log("SaveSchemaFlag:", saveSchemaFlag);
-    console.log("SaveSchemaName:", saveSchemaName);
-
     try {
       console.log("Uploading SQL file...");
       const response = await axios.post(

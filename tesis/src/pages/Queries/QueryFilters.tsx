@@ -45,8 +45,8 @@ const QueryFilters: React.FC<Props> = ({ filters, setFilters }) => {
       </Select>
 
       <Select
-        value={filters.isValid}
-        onValueChange={(value) => handleFilterChange("isValid", value)}
+        value={filters.isValid === "all" ? "all" : filters.isValid} 
+        onValueChange={(value) => handleFilterChange("isValid", value === "true" ? true : value === "false" ? false : "all")}
       >
         <SelectTrigger className="border p-2 w-full">
           <SelectValue placeholder="Válido" />
@@ -55,6 +55,7 @@ const QueryFilters: React.FC<Props> = ({ filters, setFilters }) => {
           <SelectGroup>
             <SelectItem value="true">Sí</SelectItem>
             <SelectItem value="false">No</SelectItem>
+            <SelectItem value="all">Todos</SelectItem> {/* "all" representa todos */}
           </SelectGroup>
         </SelectContent>
       </Select>
