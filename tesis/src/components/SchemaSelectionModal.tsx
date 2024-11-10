@@ -9,13 +9,17 @@ const SchemaSelectionModal = ({ schemas = [], onSelect, onClose }) => (
         <DialogTitle>Seleccionar Esquema</DialogTitle>
       </DialogHeader>
       <ul>
-        {schemas.map((schema, index) => (
-          <li key={index} className="mb-2">
-            <Button onClick={() => onSelect(schema)} className="w-full text-left">
-              {schema.filename}
-            </Button>
-          </li>
-        ))}
+        {schemas.map((schema, index) => {
+          const filenameWithoutExtension = schema.filename.split(".")[0];
+          const displayName = filenameWithoutExtension.split("_").slice(1).join("_"); 
+          return (
+            <li key={index} className="mb-2">
+              <Button onClick={() => onSelect(schema)} className="w-full text-left">
+                {displayName}
+              </Button>
+            </li>
+          );
+        })}
       </ul>
     </DialogContent>
   </Dialog>
