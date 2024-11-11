@@ -95,7 +95,7 @@ export const App = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (selectedModel) => {
     const embedding = await generateEmbeddingWithBackoff(query);
     if (embedding.length > 0) {
       setPromptEmbedding(embedding);
@@ -122,7 +122,7 @@ export const App = () => {
 
         gptMutation({
           userInput: query,
-          model: modelToUse,
+          model: selectedModel,
           sqlFile,
           saveSchemaFlag,
           saveSchemaName,
@@ -231,7 +231,7 @@ export const App = () => {
             <Button
               onClick={() => {
                 setModelToUse("gpt");
-                handleSubmit();
+                handleSubmit("gpt");
               }}
               disabled={!query}
               className="bg-indigo-600 hover:bg-indigo-800 text-white"
@@ -241,7 +241,7 @@ export const App = () => {
             <Button
               onClick={() => {
                 setModelToUse("vertex");
-                handleSubmit();
+                handleSubmit("vertex");
               }}
               disabled={!query}
               className="bg-blue-600 hover:bg-blue-800 text-white"
