@@ -13,6 +13,9 @@ interface VoiceInputProps {
 const VoiceInput: React.FC<VoiceInputProps> = ({ query, setQuery }) => {
   const [isListening, setIsListening] = useState<boolean>(false);
 
+  if (recognition) {
+    recognition.lang = 'es-ES';
+  }
   const startListening = () => {
     if (recognition) {
       recognition.start();
