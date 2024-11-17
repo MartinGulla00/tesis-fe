@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaMicrophone } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaMicrophone } from "react-icons/fa";
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -14,8 +14,9 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ query, setQuery }) => {
   const [isListening, setIsListening] = useState<boolean>(false);
 
   if (recognition) {
-    recognition.lang = 'es-ES';
+    recognition.lang = "es-ES";
   }
+
   const startListening = () => {
     if (recognition) {
       recognition.start();
@@ -33,7 +34,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ query, setQuery }) => {
       };
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error: ', event.error);
+        console.error("Speech recognition error: ", event.error);
         setIsListening(false);
       };
     } else {
@@ -49,19 +50,21 @@ const VoiceInput: React.FC<VoiceInputProps> = ({ query, setQuery }) => {
   };
 
   return (
-    <div className="flex items-center space-x-2">
-      <input
-        className="border-2 border-gray-300 bg-white px-5 pr-10 rounded-lg text-sm focus:outline-gray-500 h-10 w-full"
-        placeholder="Habla o escribe una consulta..."
+    <div className="flex items-start space-x-3">
+      <textarea
+        className="w-full border border-gray-300 rounded-md py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm resize-none h-24"
+        placeholder="Habla o escribe tu consulta en lenguaje natural..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-    
+
       <button
-        className={`bg-blue-500 text-white rounded-lg p-2 h-10 w-10 flex justify-center items-center focus:outline-none ${isListening ? 'bg-red-500' : ''}`}
+        className={`flex items-center justify-center w-12 h-12 rounded-full text-white focus:outline-none shadow-md transition ${
+          isListening ? "bg-red-500 animate-pulse" : "bg-indigo-500 hover:bg-indigo-600"
+        }`}
         onClick={isListening ? stopListening : startListening}
       >
-        <FaMicrophone />
+        <FaMicrophone className="text-lg" />
       </button>
     </div>
   );
