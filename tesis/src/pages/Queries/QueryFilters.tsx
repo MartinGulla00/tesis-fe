@@ -114,7 +114,11 @@ const QueryFilters: React.FC<Props> = ({ filters, setFilters }) => {
           </div>
         </div>
 
-        <div className="flex flex-col">
+        <div
+          className={`flex flex-col p-4 rounded-lg ${
+            filters.date === "custom" ? "border-2 border-blue-500 shadow-md" : ""
+          }`}
+        >
           <label className="text-sm font-medium text-gray-700 mb-2">Fecha</label>
           <select
             value={filters.date}
