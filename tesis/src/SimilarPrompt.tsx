@@ -15,15 +15,15 @@ interface SimilarPromptProps {
 const SimilarPrompt: React.FC<SimilarPromptProps> = ({ recommendation, onAskThis, onClose }) => {
   return (
     <div>
-      <h2>You previously asked:</h2>
+      <h2>Antes preguntaste:</h2>
       <div className="mb-4">
-        <p>{recommendation.question || "No prompt available"}</p>
+        <p>{recommendation.question || "No hay prompts disponibles" }</p>
         <div className="flex gap-2 mt-2">
           <button 
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-lg"
             onClick={() => onAskThis(recommendation.question)}
           >
-            Preguntar esto
+            Usar sugerencia
           </button>
           <button 
             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded-lg"
