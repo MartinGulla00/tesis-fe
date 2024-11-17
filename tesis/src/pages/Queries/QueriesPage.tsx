@@ -4,12 +4,21 @@ import QueryListTable from "@/pages/Queries/QueryListTable";
 import QueryFilters from "@/pages/Queries/QueryFilters";
 import useToaster from "../../hooks/common/useToaster";
 
+type Filters = {
+  queryText: string;
+  model: string;
+  isValid: "all" | "true" | "false"; 
+  date: string; 
+  customDateRange?: { start: string; end: string };
+};
+
 const QueriesPage: React.FC = () => {
-  const [queries, setQueries] = useState([]);
-  const [filters, setFilters] = useState({
+  const [queries, setQueries] = useState<any[]>([]);
+  const [filters, setFilters] = useState<Filters>({
     queryText: "",
     model: "",
     isValid: "all",
+    date: "all",
   });
   const { showToastError } = useToaster();
 
@@ -20,26 +29,23 @@ const QueriesPage: React.FC = () => {
   const fetchQueries = async () => {
     try {
       const params: any = {};
-
-      if (filters.model && filters.model.trim() !== "") {
-        params.model = filters.model;
+      if (filters.model) {
+        params.model = filters.model.trim();
       }
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_SERVER_API}/api/queries/detail`,
-        {
-          params,
-        }
+        { params }
       );
 
-      if (!response.data || response.status !== 200) {
-        showToastError(null, "Error fetching queries");
+      if (response.status !== 200 || !response.data) {
+        showToastError(null, "Error al obtener las consultas");
         return;
       }
       setQueries(response.data);
     } catch (error) {
-      console.error("Error fetching queries:", error);
-      showToastError(error, "Error fetching queries");
+      console.error("Error al obtener las consultas:", error);
+      showToastError(error, "Error al obtener las consultas");
     }
   };
 
@@ -51,7 +57,7 @@ const QueriesPage: React.FC = () => {
       );
 
       if (response.status !== 200) {
-        showToastError(null, "Error updating query");
+        showToastError(null, "Error al actualizar la validez de la consulta");
         return;
       }
 
@@ -61,20 +67,59 @@ const QueriesPage: React.FC = () => {
         )
       );
     } catch (error) {
-      console.error("Error updating query validity:", error);
-      showToastError(error, "Error updating query");
+      console.error("Error al actualizar la validez:", error);
+      showToastError(error, "Error al actualizar la validez");
     }
   };
 
-  const filteredQueries = queries
-    .filter((query) =>
-      query.natural_language_query
+  const calculateDateRange = (date: string): [Date | null, Date | null] => {
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999));
+
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    switch (date) {
+      case "today":
+        return [startOfToday, endOfToday];
+      case "this_week":
+        return [startOfWeek, endOfToday];
+      case "this_month":
+        return [startOfMonth, endOfToday];
+      default:
+        return [null, null];
+    }
+  };
+
+  const filteredQueries = queries.filter((query) => {
+    const { queryText, isValid, date } = filters;
+
+    if (
+      queryText &&
+      !query.natural_language_query
         .toLowerCase()
-        .includes(filters.queryText.toLowerCase())
-    )
-    .filter((query) =>
-      filters.isValid === "all" ? true : query.is_valid === filters.isValid
-    );
+        .includes(queryText.toLowerCase())
+    ) {
+      return false;
+    }
+
+    if (isValid !== "all" && query.is_valid !== (isValid === "true")) {
+      return false;
+    }
+
+    const [startDate, endDate] = calculateDateRange(date);
+    if (startDate && endDate) {
+      const queryDate = new Date(query.timestamp);
+      if (queryDate < startDate || queryDate > endDate) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 
   return (
     <div className="p-4">
