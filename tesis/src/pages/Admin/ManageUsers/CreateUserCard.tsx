@@ -153,7 +153,10 @@ function CreateUserCard({ onStatusUpdate }: Props) {
             Creando
           </Button>
         ) : (
-          <Button onClick={handleSubmit}>Crear usuario</Button>
+          <Button 
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+            onClick={handleSubmit}>Crear usuario
+          </Button>
         )}
       </CardFooter>
     </Card>
