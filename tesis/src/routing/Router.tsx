@@ -34,13 +34,13 @@ function Router() {
                 "verRoles",
               ])}
               {renderProtectedRoute(paths.QUERIES, QueriesPage, [
-                "verRoles",
+                "verQueries",
               ])}
               {renderProtectedRoute(paths.QUERIES, QueryFilters, [
-                "verRoles",
+                "verQueries",
               ])}
               {renderProtectedRoute(paths.QUERY_DETAILS, QueryDetailsPage, [
-                "verRoles",
+                "verQueries",
               ])}
               <Route path={paths.APP} element={<App />} />
               <Route path="*" element={<NotFound />} />

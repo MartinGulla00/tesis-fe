@@ -42,7 +42,7 @@ export const navData: NavItemData[] = [
     title: "Consultas",
     icon: null, 
     link: paths.QUERIES,
-    permissions: ["verRoles"], 
+    permissions: ["verQueries"], 
     subitems: null,
   }
 ];
