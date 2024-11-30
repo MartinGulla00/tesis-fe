@@ -81,7 +81,7 @@ export const UserMenu = () => {
             className="flex items-center space-x-2 relative rounded-md hover:bg-zinc-300 dark:hover:bg-zinc-900 p-2 pl-4 pr-2 cursor-pointer"
             onClick={toggleDropdown}
           >
-            <span className="text-sm text-brand-green font-bold">
+            <span className="text-sm font-bold">
               {authState?.user?.username.toUpperCase()}
             </span>
             <PiUserCircle className="text-2xl dark:text-zinc-50" />
