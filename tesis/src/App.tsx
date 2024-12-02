@@ -53,16 +53,23 @@ export const App = () => {
   const [saveSchemaFlag, setSaveSchemaFlag] = useState(false);
   const [saveSchemaName, setSaveSchemaName] = useState("");
 
+  const [loading, setLoading] = useState(false); // New loading state
+
   const fetchSchemas = useMutation({
     mutationFn: async () => {
       const userId = getUserId();
       return schemaService.fetchSchemas(userId);
     },
+    onMutate: () => setLoading(true), // Start loading when mutation is initiated
     onSuccess: (data) => {
       setSchemas(data);
       setShowSchemaModal(true);
+      setLoading(false); // Stop loading when mutation succeeds
     },
-    onError: (error) => console.error("Error fetching schemas:", error),
+    onError: (error) => {
+      console.error("Error fetching schemas:", error);
+      setLoading(false); // Stop loading when mutation fails
+    },
   });
 
   const gptMutation = useMutation<string, Error, {
@@ -73,10 +80,15 @@ export const App = () => {
     saveSchemaName: string;
   }>({
     mutationFn: (variables) => createQuery.mutation(variables),
+    onMutate: () => setLoading(true), // Start loading when mutation is initiated
     onSuccess: (data) => {
       setResultSqlQuery(data);
+      setLoading(false); // Stop loading when mutation succeeds
     },
-    onError: (error) => console.error("Error generating SQL query:", error),
+    onError: (error) => {
+      console.error("Error generating SQL query:", error);
+      setLoading(false); // Stop loading when mutation fails
+    },
   });
 
   const handleCopy = () => {
@@ -160,7 +172,7 @@ export const App = () => {
       saveSchemaName,
     });
   };
-  
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 space-y-6 border border-gray-200">
@@ -194,6 +206,12 @@ export const App = () => {
             <p className="text-sm text-gray-500 mt-2">No hay un esquema cargado. Usa uno por defecto si lo prefieres.</p>
           )}
         </div>
+
+        {loading && (
+          <div className="text-center text-blue-500 mt-4">
+            <p>Procesando...</p>
+          </div>
+        )}
 
         {databaseSchemaFile && (
           <div className="mt-4">

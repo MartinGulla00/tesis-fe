@@ -82,7 +82,7 @@ function CreateUserCard({ onStatusUpdate }: Props) {
           />
         </div>
         <div className="flex flex-col space-y-1.5">
-          <Label>Usuario</Label>
+          <Label>Nombre de usuario</Label>
           <Input
             type="text"
             id="username"
